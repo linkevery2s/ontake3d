@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            border: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            border: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"
+          }
+        }
+      </script>
+
+    <script type="module">
+
+        import * as THREE from 'three';
+        import { OrbitControls } from 'https://unpkg.com/three@0.168.0/examples/jsm/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        console.log(THREE);
+        console.log(OrbitControls);
+
+        onload = () => {
+
+            // レンダラーを作成
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#canvas')
+            });
+
+            renderer.setPixelRatio(1);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // scene
+            const scene = new THREE.Scene();
+
+            // camera
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.set(0, 800, -1000);
+
+            // mouse control
+            const controls = new OrbitControls(camera, renderer.domElement);
+
+            // plb loaded
+            const loader = new GLTFLoader();
+            const url = '../ontake.glb';
+
+            let model = null;
+
+            loader.load(
+                url,
+                function (gltf) {
+                    model = gltf.scene;
+                    model.scale.set(7, 7, 7);
+                    scene.add(model);
+
+                },
+                function (error) {
+                    console.log("error");
+                }
+            );
+
+            // light
+            const light = new THREE.DirectionalLight(0xFFFFFF, 1);
+            light.intensity = 5;
+            light.position.set(1, 1, 1);
+            scene.add(light);
+
+            // animation start
+            let animate = () => {
+                requestAnimationFrame(animate);
+
+                model.rotation.y += 0.005;
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+        }
+
+
+    </script>
+</head>
+
+<body>
+
+    <canvas id="canvas" width="100%" height="100%"></canvas>
+
+</body>
+</html>
